@@ -31,7 +31,7 @@ Database:
 MongoDB (Atlas or Local) → Stores blunders
 Deployment:
 Frontend: Vercel / Netlify
-Backend: Render / Railway
+Backend: Render 
 ### Why This Project?
 The project serves as an ideal choice for novice programmers who learn fundamental concepts of frontend and backend development alongside database management.
 Through this project users can develop their skills in API development alongside data retrieval techniques and user interaction management.
