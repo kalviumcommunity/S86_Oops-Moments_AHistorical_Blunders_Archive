@@ -1,0 +1,40 @@
+{
+  "name": "asap project",
+  "version": "1",
+  "items": [
+    {
+      "type": "http",
+      "name": "asap ping",
+      "seq": 2,
+      "request": {
+        "url": "http://localhost:5000/ping",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "none",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "docs": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    }
+  ],
+  "environments": [],
+  "brunoConfig": {
+    "version": "1",
+    "name": "asap project",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  }
+}
