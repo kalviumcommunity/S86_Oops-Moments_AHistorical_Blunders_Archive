@@ -11,7 +11,7 @@ app.use(express.json());
 
 
 app.use('/auth',userRouter)
-app.use('post',postRouter)
+app.use('/post',postRouter)
 
 
 
