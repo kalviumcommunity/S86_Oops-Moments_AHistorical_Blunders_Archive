@@ -4,7 +4,7 @@ const Posts = require('../models/post');
 
 // Add a new post
 router.post("/add", async (req, res) => {
-    const { title, description, timeperiod } = req.body; // Fixed 'discription' typo
+    const { title, description, timeperiod } = req.body; 
     if (!title || !description || !timeperiod) {
         return res.status(400).json({ message: "All fields are required" });
     }
