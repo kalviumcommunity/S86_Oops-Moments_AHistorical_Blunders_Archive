@@ -6,7 +6,20 @@ const HistoryFeed = () => {
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/post/feed")
+        setEntries(res.data);
+      } catch (error) {
+        console.error("Failed to fetch history data", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   if (isLoading) {
     return (
