@@ -1,7 +1,7 @@
 
 
 import { motion } from "framer-motion"
-import { History, Menu, Search, X } from "lucide-react"
+import { History, Search } from "lucide-react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 
