@@ -8,25 +8,12 @@ import axios from 'axios';
 const API_URL = "http://localhost:5000"; 
 
 const EditPostModal = ({ isOpen, onClose, entry, refreshFeed }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    timeperiod: ''
-  });
+  const [formData, setFormData] = useState(entry);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Initialize form data with entry values when component mounts or entry changes
-  useEffect(() => {
-    if (entry) {
-      setFormData({
-        title: entry.title || '',
-        description: entry.description || '',
-        timeperiod: entry.timeperiod || ''
-      });
-    }
-  }, [entry]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
