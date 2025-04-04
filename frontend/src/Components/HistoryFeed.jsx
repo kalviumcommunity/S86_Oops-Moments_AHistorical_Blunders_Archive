@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from "react";
 import HistoryCard from "./HistoryCard";
 import axios from "axios";
+import BlogNavFAB from "./BlogNavFAB";
+
 
 const HistoryFeed = () => {
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/post/feed")
-        setEntries(res.data);
-      } catch (error) {
-        console.error("Failed to fetch history data", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchHistory = async () => {
+    setIsLoading(true);
+    try {
+      const res = await axios.get("http://localhost:5000/post/feed");
+      setEntries(res.data);
+    } catch (error) {
+      console.error("Failed to fetch history data", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchHistory();
   }, []);
 
@@ -47,9 +50,10 @@ const HistoryFeed = () => {
 
       <div className="grid grid-cols-1 gap-6 ">
         {entries.map((entry) => (
-          <HistoryCard key={entry.id} entry={entry} />
+          <HistoryCard key={entry._id} entry={entry} refreshFeed={fetchHistory} />
         ))}
       </div>
+      <BlogNavFAB refreshFeed={fetchHistory}/>
     </div>
   );
 };
