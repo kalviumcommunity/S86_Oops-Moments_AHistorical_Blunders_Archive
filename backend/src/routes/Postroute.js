@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Posts = require('../models/post');
+const auth = require('../middleware/tokenAuth')
+const  { isAdmin, isAuthorAdmin } = require('../middleware/roleAuth')
 
 // Add a new post
-router.post("/add", async (req, res) => {
+router.post("/add", auth,async (req, res) => {
     const { title, description, timeperiod } = req.body; 
     if (!title || !description || !timeperiod) {
         return res.status(400).json({ message: "All fields are required" });
@@ -13,8 +15,11 @@ router.post("/add", async (req, res) => {
         const newpost = new Posts({
             title,
             description,
-            timeperiod
+            timeperiod,
+            author:req.user.id
         });
+
+        console.log(newpost)
 
         await newpost.save();
         res.status(201).json({ message: "Post created successfully", post: newpost });
@@ -25,17 +30,26 @@ router.post("/add", async (req, res) => {
 });
 
 // Edit a post by ID
-router.put('/edit/:id', async (req, res) => {
-    const { title, description, timeperiod } = req.body; // Fixed destructuring
+router.put('/edit/:id', auth, isAuthorAdmin, async (req, res) => {
+    const { title, description, timeperiod } = req.body;
+
     if (!title && !description && !timeperiod) {
         return res.status(400).json({ message: "At least one field is required to update" });
     }
+    if(req.user.admin){
+        return res.json({message:"only authors can edit"})
+    }
 
     try {
+        const updates = {};
+        if (title !== undefined) updates.title = title;
+        if (description !== undefined) updates.description = description;
+        if (timeperiod !== undefined) updates.timeperiod = timeperiod;
+
         const updatedPost = await Posts.findByIdAndUpdate(
-            req.params.id, 
-            { title, description, timeperiod }, 
-            { new: true, runValidators: true } 
+            req.params.id,
+            updates,
+            { new: true, runValidators: true }
         );
 
         if (!updatedPost) {
@@ -49,9 +63,10 @@ router.put('/edit/:id', async (req, res) => {
     }
 });
 
+
 // delete a post by id
 
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', auth,isAuthorAdmin, async (req, res) => {
     try {
         
         const deletedPost = await Posts.findByIdAndDelete(req.params.id);

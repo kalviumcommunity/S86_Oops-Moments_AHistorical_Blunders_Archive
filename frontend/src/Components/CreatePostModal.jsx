@@ -25,11 +25,23 @@ const CreatePostModal = ({ isOpen, onClose , refreshFeed }) => {
   const handleCreatePost = async () => {
     setLoading(true);
     setError('');
+    const token = localStorage.getItem('token');
+if (!token) {
+  setError("You must be logged in to create a post.");
+  window.location.href = "/login"
+}
 
     try {
       const response = await axios.post(`${API_URL}/post/add`, formData, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+        
       });
+      
+
+      
+      
 
       console.log('Post Created:', response.data);
       refreshFeed();
