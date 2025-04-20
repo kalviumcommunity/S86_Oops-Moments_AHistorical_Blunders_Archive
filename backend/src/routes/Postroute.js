@@ -93,4 +93,16 @@ router.get('/feed', async (req, res) => {
     }
 });
 
+router.get('/user/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const posts = await Posts.find({ author: userId }); 
+        // console.log(posts); 
+        res.json(posts); 
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 module.exports = router;
