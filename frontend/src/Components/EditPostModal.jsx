@@ -23,15 +23,29 @@ const EditPostModal = ({ isOpen, onClose, entry, refreshFeed }) => {
   const handleEditPost = async () => {
     setLoading(true);
     setError('');
-
+  
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+  
     try {
-      const response = await axios.put(`${API_URL}/post/edit/${entry._id}`, formData, {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await axios.put(
+        `${API_URL}/post/edit/${entry._id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+  
       console.log('Post updated:', response.data);
       refreshFeed();
-      onClose(); 
+      onClose();
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong');
       console.error('Error updating post:', err);
@@ -39,6 +53,7 @@ const EditPostModal = ({ isOpen, onClose, entry, refreshFeed }) => {
       setLoading(false);
     }
   };
+  
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

@@ -7,7 +7,10 @@ const baseSchema = joi.object({
 
 const signupvalidation = (req, res, next) => {
     const Schema = baseSchema.keys({
-        username: joi.string().required() 
+        username: joi.string().required(),
+        confirmPassword: joi.string()
+        .required()
+        .valid(joi.ref('password')) 
     });
 
     const { error } = Schema.validate(req.body);
