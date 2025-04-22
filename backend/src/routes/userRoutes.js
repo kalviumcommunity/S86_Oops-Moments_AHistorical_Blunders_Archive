@@ -4,6 +4,7 @@ const { signupvalidation, loginvalidation } = require('../middleware/userAuth');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const user = require('../models/user');
 require('dotenv').config();
 
 router.post('/signup', signupvalidation, async (req, res) => {
@@ -46,16 +47,37 @@ router.post('/login', loginvalidation, async (req, res) => {
         }
 
         const token = jwt.sign({ id:user._id ,username: user.username, email: user.email ,admin:user.admin}, process.env.JWT_SECRET, { expiresIn: '11h' });
+        
+        res.cookie("username", user.username, {
+            httpOnly: false, 
+            maxAge: 11 * 60 * 60 * 1000 
+        });
+
         res.status(200).json({ message: "Login successful", token });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+router.post('/logout', (req, res) => {
+    res.clearCookie("username", {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax"
+    });
+
+    res.status(200).json({ message: "Logout successful" });
+});
+
+
 router.get('/users', async (req, res) => {
     try {
-        const users = await User.find(); 
-        res.json(users); 
+        const users = await User.find();
+        const {password,...userwithoutpass}=users
+        // console.log(userwithoutpass)
+        res.json(userwithoutpass); 
     } catch (err) {
         res.status(500).json({ error: err.message }); 
     }
