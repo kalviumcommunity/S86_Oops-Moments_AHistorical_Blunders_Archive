@@ -75,9 +75,9 @@ router.post('/logout', (req, res) => {
 router.get('/users', async (req, res) => {
     try {
         const users = await User.find();
-        const {password,...userwithoutpass}=users
-        // console.log(userwithoutpass)
-        res.json(userwithoutpass); 
+        const usersWithoutPasswords = users.map(({ password, ...rest }) => rest);
+        res.json(usersWithoutPasswords);
+         
     } catch (err) {
         res.status(500).json({ error: err.message }); 
     }
