@@ -24,7 +24,9 @@ const HistoryFeed = () => {
 
   useEffect(() => {
     fetchHistory();
+    
   }, []);
+
 
   const handleAuthorFilter = (data) => {
     if (data === "All") {
