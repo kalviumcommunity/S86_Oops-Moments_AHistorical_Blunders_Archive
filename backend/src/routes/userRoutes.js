@@ -74,14 +74,13 @@ router.post('/logout', (req, res) => {
 
 router.get('/users', async (req, res) => {
     try {
-        const users = await User.find();
-        const usersWithoutPasswords = users.map(({ password, ...rest }) => rest);
-        res.json(usersWithoutPasswords);
-         
+        const users = await User.find().select('-password');
+        res.json(users);
     } catch (err) {
-        res.status(500).json({ error: err.message }); 
+        res.status(500).json({ error: err.message });
     }
 });
+
 
 
 module.exports = router;

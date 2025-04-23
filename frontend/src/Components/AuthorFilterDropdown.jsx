@@ -10,7 +10,7 @@ const AuthorFilterDropdown = ({ onAuthorPostsFetched }) => {
     const fetchUsers = async () => {
       try {
         const res = await axios.get("http://localhost:5000/auth/users");
-        setUsers(Object.values(res.data));
+        setUsers(res.data);
         console.log(res.data)
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -19,7 +19,7 @@ const AuthorFilterDropdown = ({ onAuthorPostsFetched }) => {
 
     fetchUsers();
   }, []);
-
+  console.log(users)
   const handleChange = async (e) => {
     const userId = e.target.value;
     setSelectedUserId(userId);
