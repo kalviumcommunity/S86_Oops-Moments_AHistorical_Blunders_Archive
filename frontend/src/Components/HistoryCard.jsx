@@ -19,29 +19,27 @@ const HistoryCard = ({ entry, refreshFeed }) => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       setIsDeleting(true);
-      const token = localStorage.getItem("token");
-      if (!token) {
-        window.location.href = "/login";
-        return;
-      }
   
       try {
         await axios.delete(`${API_URL}/post/delete/${entry._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true, 
         });
-        
+  
         refreshFeed();
       } catch (err) {
-        console.error("Error deleting post:", err);
-        alert(err.response?.data?.message || "Failed to delete post");
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          window.location.href = "/login"; // Redirect if not authenticated
+        } else {
+          console.error("Error deleting post:", err);
+          alert(err.response?.data?.message || "Failed to delete post");
+        }
       } finally {
         setIsDeleting(false);
         setShowTooltip(false);
       }
     }
   };
+  
   
   const handleClickOutside = (e) => {
     if (showTooltip) {

@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import axios from 'axios';
 
-const API_URL = "http://localhost:5000"; 
+const API_URL = "http://localhost:5000";
 
-const CreatePostModal = ({ isOpen, onClose , refreshFeed }) => {
+const CreatePostModal = ({ isOpen, onClose, refreshFeed }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -25,30 +31,22 @@ const CreatePostModal = ({ isOpen, onClose , refreshFeed }) => {
   const handleCreatePost = async () => {
     setLoading(true);
     setError('');
-    const token = localStorage.getItem('token');
-if (!token) {
-  setError("You must be logged in to create a post.");
-  window.location.href = "/login"
-}
 
     try {
       const response = await axios.post(`${API_URL}/post/add`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-        
+        withCredentials: true 
       });
-      
-
-      
-      
 
       console.log('Post Created:', response.data);
       refreshFeed();
-      onClose(); 
+      onClose();
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
-      console.error('Error creating post:', err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        window.location.href = "/login"; // Redirect if unauthorized
+      } else {
+        setError(err.response?.data?.message || 'Something went wrong');
+        console.error('Error creating post:', err);
+      }
     } finally {
       setLoading(false);
     }
@@ -61,19 +59,19 @@ if (!token) {
           <DialogTitle>Create a New Post</DialogTitle>
         </DialogHeader>
         <div className="space-y-5">
-          <Input 
+          <Input
             name="title"
-            placeholder="Post Title" 
-            value={formData.title} 
-            onChange={handleChange} 
+            placeholder="Post Title"
+            value={formData.title}
+            onChange={handleChange}
             className="border-slate-900 focus:ring-slate-800"
           />
-          <Textarea 
+          <Textarea
             name="description"
-            placeholder="Write your post..." 
-            value={formData.description} 
-            onChange={handleChange} 
-            rows={4} 
+            placeholder="Write your post..."
+            value={formData.description}
+            onChange={handleChange}
+            rows={4}
             className="border-slate-900 focus:ring-slate-800 max-h-100 max-w-115"
           />
           <Input
@@ -88,7 +86,9 @@ if (!token) {
         </div>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={loading}>Cancel</Button>
+          <Button variant="outline" onClick={onClose} disabled={loading}>
+            Cancel
+          </Button>
           <Button onClick={handleCreatePost} disabled={loading}>
             {loading ? 'Creating...' : 'Create'}
           </Button>

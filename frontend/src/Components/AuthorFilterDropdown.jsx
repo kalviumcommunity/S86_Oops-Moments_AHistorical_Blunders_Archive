@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Users } from "lucide-react";
 
 const AuthorFilterDropdown = ({ onAuthorPostsFetched }) => {
   const [users, setUsers] = useState([]);
@@ -10,6 +11,7 @@ const AuthorFilterDropdown = ({ onAuthorPostsFetched }) => {
       try {
         const res = await axios.get("http://localhost:5000/auth/users");
         setUsers(res.data);
+        console.log(res.data)
       } catch (err) {
         console.error("Error fetching users:", err);
       }
@@ -17,7 +19,7 @@ const AuthorFilterDropdown = ({ onAuthorPostsFetched }) => {
 
     fetchUsers();
   }, []);
-
+  console.log(users)
   const handleChange = async (e) => {
     const userId = e.target.value;
     setSelectedUserId(userId);
