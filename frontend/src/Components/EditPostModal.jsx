@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import axios from 'axios';
 
-const API_URL = "http://localhost:5000"; 
+const API_URL = "http://localhost:5000";
 
 const EditPostModal = ({ isOpen, onClose, entry, refreshFeed }) => {
   const [formData, setFormData] = useState(entry);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,37 +26,33 @@ const EditPostModal = ({ isOpen, onClose, entry, refreshFeed }) => {
   const handleEditPost = async () => {
     setLoading(true);
     setError('');
-  
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-  
+
     try {
       const response = await axios.put(
         `${API_URL}/post/edit/${entry._id}`,
         formData,
         {
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
           },
+          withCredentials: true // ✅ Send cookies (including JWT)
         }
       );
 
-  
       console.log('Post updated:', response.data);
       refreshFeed();
       onClose();
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
-      console.error('Error updating post:', err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        window.location.href = "/login"; // Redirect if not authenticated
+      } else {
+        setError(err.response?.data?.message || 'Something went wrong');
+        console.error('Error updating post:', err);
+      }
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -62,19 +61,19 @@ const EditPostModal = ({ isOpen, onClose, entry, refreshFeed }) => {
           <DialogTitle>Edit Post</DialogTitle>
         </DialogHeader>
         <div className="space-y-5">
-          <Input 
+          <Input
             name="title"
-            placeholder="Post Title" 
-            value={formData.title} 
-            onChange={handleChange} 
+            placeholder="Post Title"
+            value={formData.title}
+            onChange={handleChange}
             className="border-slate-900 focus:ring-slate-800"
           />
-          <Textarea 
+          <Textarea
             name="description"
-            placeholder="Write your post..." 
-            value={formData.description} 
-            onChange={handleChange} 
-            rows={4} 
+            placeholder="Write your post..."
+            value={formData.description}
+            onChange={handleChange}
+            rows={4}
             className="border-slate-900 focus:ring-slate-800 max-h-100 max-w-115"
           />
           <Input
@@ -89,7 +88,9 @@ const EditPostModal = ({ isOpen, onClose, entry, refreshFeed }) => {
         </div>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={loading}>Cancel</Button>
+          <Button variant="outline" onClick={onClose} disabled={loading}>
+            Cancel
+          </Button>
           <Button onClick={handleEditPost} disabled={loading}>
             {loading ? 'Updating...' : 'Update'}
           </Button>

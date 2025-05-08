@@ -4,7 +4,6 @@ const { signupvalidation, loginvalidation } = require('../middleware/userAuth');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const user = require('../models/user');
 require('dotenv').config();
 
 router.post('/signup', signupvalidation, async (req, res) => {
@@ -46,14 +45,18 @@ router.post('/login', loginvalidation, async (req, res) => {
             return res.status(401).json({ message: "Invalid password" });
         }
 
-        const token = jwt.sign({ id:user._id ,username: user.username, email: user.email ,admin:user.admin}, process.env.JWT_SECRET, { expiresIn: '11h' });
+        const token = jwt.sign({ id: user._id, username: user.username, email: user.email, admin: user.admin }, process.env.JWT_SECRET, { expiresIn: '11h' });
         
-        res.cookie("username", user.username, {
-            httpOnly: false, 
-            maxAge: 11 * 60 * 60 * 1000 
+        
+        res.cookie("token", token, {
+            httpOnly: true, 
+            secure: false,  
+            sameSite: "lax",
+            maxAge: 11 * 60 * 60 * 1000  
         });
 
-        res.status(200).json({ message: "Login successful", token });
+        
+        res.status(200).json({ message: "Login successful",token });
 
     } catch (error) {
         console.error(error);
@@ -61,16 +64,16 @@ router.post('/login', loginvalidation, async (req, res) => {
     }
 });
 
+
 router.post('/logout', (req, res) => {
-    res.clearCookie("username", {
-        httpOnly: false,
+    res.clearCookie("token", {
+        httpOnly: true, 
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax"
     });
 
     res.status(200).json({ message: "Logout successful" });
 });
-
 
 router.get('/users', async (req, res) => {
     try {
@@ -80,7 +83,5 @@ router.get('/users', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-
 
 module.exports = router;
