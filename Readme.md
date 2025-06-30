@@ -1,5 +1,5 @@
 # S86_Oops-Moments_AHistorical_Blunders_Archive
-FRontend:[text](https://admirable-hotteok-8d61dc.netlify.app/)
+https://admirable-hotteok-8d61dc.netlify.app
 ### Project Title:
 Oops! Moments - A Historical Blunders Archive
 
